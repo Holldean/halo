@@ -1,16 +1,19 @@
 package run.halo.app.controller.content;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import run.halo.app.controller.content.model.PostModel;
+import run.halo.app.event.logger.VisitorLogEvent;
 import run.halo.app.model.entity.Post;
 import run.halo.app.model.enums.PostPermalinkType;
 import run.halo.app.service.OptionService;
 import run.halo.app.service.PostService;
+import run.halo.app.utils.ServletUtils;
 
 import java.util.Objects;
 
@@ -31,12 +34,16 @@ public class ContentIndexController {
 
     private final PostModel postModel;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     public ContentIndexController(PostService postService,
                                   OptionService optionService,
-                                  PostModel postModel) {
+                                  PostModel postModel,
+                                  ApplicationEventPublisher eventPublisher) {
         this.postService = postService;
         this.optionService = optionService;
         this.postModel = postModel;
+        this.eventPublisher = eventPublisher;
     }
 
 
@@ -49,7 +56,6 @@ public class ContentIndexController {
      */
     @GetMapping
     public String index(Integer p, String token, Model model) {
-
         PostPermalinkType permalinkType = optionService.getPostPermalinkType();
 
         if (PostPermalinkType.ID.equals(permalinkType) && !Objects.isNull(p)) {
@@ -70,6 +76,8 @@ public class ContentIndexController {
     @GetMapping(value = "page/{page}")
     public String index(Model model,
                         @PathVariable(value = "page") Integer page) {
+        String ipAddress = ServletUtils.getRequestIp();
+        eventPublisher.publishEvent(new VisitorLogEvent(this, ipAddress));
         return postModel.list(page, model);
     }
 }

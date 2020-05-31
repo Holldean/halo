@@ -1,6 +1,8 @@
 package run.halo.app.model.dto;
 
 import lombok.Data;
+import run.halo.app.model.projection.VisitorLogDayCountProjection;
+import run.halo.app.model.projection.VisitorLogMonthCountProjection;
 
 /**
  * Statistic DTO.
@@ -34,4 +36,8 @@ public class StatisticDTO {
     private Long visitCount;
 
     private Long likeCount;
+
+    private VisitorLogDayCountProjection visitCountToday;
+
+    private VisitorLogMonthCountProjection visitCountCurrentMonth;
 }

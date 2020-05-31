@@ -5,6 +5,7 @@ import org.springframework.util.Assert;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -87,5 +88,61 @@ public class DateUtils {
                 result = date;
         }
         return result;
+    }
+
+    /**
+     * Get the start time of a day.
+     *
+     * @param  date date instance must not be null
+     * @return date object of the start time
+     */
+    public static Date getStartTimeOfDay(@NonNull Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    /**
+     * Get the number of date.
+     *
+     * @param  date date instance must not be null
+     * @return the number of month, this number already plus one
+     */
+    public static int getMonth(@NonNull Date date) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    /**
+     * Get the date of few days ago.
+     *
+     * @param  days the number of days
+     * @return date object of that day
+     */
+    public static Date getDayAgo(int days) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(now());
+        // get few days ago
+        calendar.add(Calendar.DAY_OF_MONTH, -days);
+        return getStartTimeOfDay(calendar.getTime());
+    }
+
+    /**
+     * Get the first day of the month few months ago.
+     *
+     * @param  months the number of months
+     * @return date object of that day
+     */
+    public static Date getFistDayOfMonth(int months) {
+        Calendar calendar = Calendar.getInstance();
+        // get first day of that month
+        calendar.add(Calendar.MONTH, -months);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return getStartTimeOfDay(calendar.getTime());
     }
 }
